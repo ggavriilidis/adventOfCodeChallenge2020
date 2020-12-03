@@ -2,11 +2,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PasswordCheckerTest {
+class PasswordValidatorTest {
 
     PasswordValidator passwordValidator = new PasswordValidator();
     @Test
     void getValidPassWordsShouldReturnTheNumberOfValidPasswordsBasedOnTheRules() {
-        assertEquals(2, passwordValidator.getValidPasswords());
+        assertEquals(636, passwordValidator.getValidPasswords());
     }
 }

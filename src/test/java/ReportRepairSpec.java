@@ -8,11 +8,11 @@ class ReportRepairTest {
 
     @Test
     void getProductOfTwoShouldReturnTheProductOfTheTwoNumbersThatSumTo2020() {
-        assertEquals(471019,  reportRepair.getProductOfTwo());
+        assertEquals(259716,  reportRepair.getProductOfTwo());
     }
 
     @Test
     void getProductOfThreeShouldReturnTheProductOfTheThreeNumbersThatSumTo2020() {
-        assertEquals(103927824,  reportRepair.getProductOfThree());
+        assertEquals(120637440,  reportRepair.getProductOfThree());
     }
 }
