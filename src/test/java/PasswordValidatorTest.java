@@ -6,7 +6,12 @@ class PasswordValidatorTest {
 
     PasswordValidator passwordValidator = new PasswordValidator();
     @Test
-    void getValidPassWordsShouldReturnTheNumberOfValidPasswordsBasedOnTheRules() {
-        assertEquals(636, passwordValidator.getValidPasswords());
+    void getValidPasswordsWithinBoundariesShouldReturnTheNumberOfValidPasswordsWhoseGivenLetterIsWithinTheUpperAndLowerBoundaries() {
+        assertEquals(636, passwordValidator.getValidPasswordsWithinBoundaries());
+    }
+
+    @Test
+    void getValidPasswordsWhichAppearOnceInGivenPositionsShouldReturnTheNumeberOfValidPasswordsWhoseGivenLetterAppearsInOneOfTheGivenPositions() {
+        assertEquals(588, passwordValidator.getValidPasswordsWhichAppearOnceInGivenPositions());
     }
 }

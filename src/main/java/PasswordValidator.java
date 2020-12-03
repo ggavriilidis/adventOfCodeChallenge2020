@@ -35,20 +35,49 @@ import java.util.stream.Stream;
  * limits of their respective policies.
  *
  * How many passwords are valid according to their policies?
+ *
+ * --- Part Two ---
+ * While it appears you validated the passwords correctly, they don't seem to be what the Official Toboggan Corporate
+ * Authentication System is expecting.
+ *
+ * The shopkeeper suddenly realizes that he just accidentally explained the password policy rules from his old job at
+ * the sled rental place down the street! The Official Toboggan Corporate Policy actually works a little differently.
+ *
+ * Each policy actually describes two positions in the password, where 1 means the first character, 2 means the
+ * second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!) Exactly
+ * one of these positions must contain the given letter. Other occurrences of the letter are irrelevant for the
+ * purposes of policy enforcement.
+ *
+ * Given the same example list from above:
+ *
+ * 1-3 a: abcde is valid: position 1 contains a and position 3 does not.
+ * 1-3 b: cdefg is invalid: neither position 1 nor position 3 contains b.
+ * 2-9 c: ccccccccc is invalid: both position 2 and position 9 contain c.
+ * How many passwords are valid according to the new interpretation of the policies?
  */
 public class PasswordValidator {
 
-    public long getValidPasswords() {
+    public long getValidPasswordsWithinBoundaries() {
+        return getValidatorStream()
+            .filter(Validator::isValidWithinUpperAndLowerBoundaries)
+            .count();
+    }
+
+    public long getValidPasswordsWhichAppearOnceInGivenPositions() {
+        return getValidatorStream()
+            .filter(Validator::isValidIfAppearsOnceAtGivenPosition)
+            .count();
+    }
+
+    private Stream<Validator> getValidatorStream() {
         return getInputStreamFromFile("passwords-input.txt")
             .map(s -> s.split(" "))
-            .map(this::toValidator)
-            .filter(Validator::isValid)
-            .count();
+            .map(this::toValidator);
     }
 
     private Validator toValidator(String[] array) {
         String[] numOfOccurrencesTokens = array[0].split("-");
-        return new Validator(new Boundary(
+        return new Validator(new Position(
             Integer.parseInt(numOfOccurrencesTokens[0]),
             Integer.parseInt(numOfOccurrencesTokens[1])
         ), array[1].charAt(0), array[2]);
@@ -64,17 +93,17 @@ public class PasswordValidator {
     }
 
     private static class Validator {
-        Boundary boundary;
+        Position position;
         Character letter;
         String password;
 
-        private Validator(Boundary boundary, Character letter, String password) {
-            this.boundary = boundary;
+        private Validator(Position position, Character letter, String password) {
+            this.position = position;
             this.letter = letter;
             this.password = password;
         }
 
-        private boolean isValid() {
+        private boolean isValidWithinUpperAndLowerBoundaries() {
             List<Character> passwordChars = password.chars().mapToObj(e -> (char) e).collect(Collectors.toList());
             Map<Character, Long> charToNumOfOccurrences = passwordChars.stream()
                 .filter(c -> c.equals(letter))
@@ -86,15 +115,21 @@ public class PasswordValidator {
         }
 
         private boolean isWithinBoundaries(long value) {
-            return boundary.lower <= value && value <= boundary.upper;
+            return position.lower <= value && value <= position.upper;
+        }
+
+        private boolean isValidIfAppearsOnceAtGivenPosition() {
+            List<Character> passwordChars = password.chars().mapToObj(e -> (char) e).collect(Collectors.toList());
+            return (passwordChars.get(position.lower - 1).equals(letter) && !passwordChars.get(position.upper - 1).equals(letter))
+                || (passwordChars.get(position.upper - 1).equals(letter) && !passwordChars.get(position.lower - 1).equals(letter));
         }
     }
 
-    private static class Boundary {
+    private static class Position {
         int lower;
         int upper;
 
-        public Boundary(int lower, int upper) {
+        public Position(int lower, int upper) {
             this.lower = lower;
             this.upper = upper;
         }
