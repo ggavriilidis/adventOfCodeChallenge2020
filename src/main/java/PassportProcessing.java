@@ -3,10 +3,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -87,74 +84,63 @@ import java.util.stream.Collectors;
  */
 public class PassportProcessing {
 
-    List<String> passports;
+    List<Passport> passports;
 
     public PassportProcessing() {
         this.passports = processFile();
     }
 
     public long countPassportsWithMandatoryFieldsPresent() {
-        return passports.stream().filter(this::containsMandatoryFields).count();
+        return passports.stream().filter(Passport::containsMandatoryFields).count();
     }
 
     public long countValidPassports() {
         return passports.stream().
-            filter(this::containsMandatoryFields)
-            .map(p -> p.split(" "))
-            .map(Passport::new)
+            filter(Passport::containsMandatoryFields)
             .filter(Passport::isValid)
             .count();
     }
 
-    private List<String> processFile() {
+    private List<Passport> processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("passport-processing.txt").toURI());
-            return Arrays.asList(Files.lines(path)
+            return Arrays.stream(Files.lines(path)
                 .collect(Collectors.joining("\n")).split("(?m)^\\n"))
-                .stream()
                 .map(s -> s.replaceAll("\\n", " "))
+                .map(p -> p.split(" "))
+                .map(Passport::new)
                 .collect(Collectors.toList());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private boolean containsMandatoryFields(String passport) {
-        List<String> requiredFields = Arrays.asList(
-            "byr",
-            "iyr",
-            "eyr",
-            "hgt",
-            "hcl",
-            "ecl",
-            "pid"
-        );
-        return requiredFields.stream().allMatch(passport::contains);
-    }
-
     private static class Passport {
-        List<Field> fields;
+        Set<Field> fields;
 
-        private static final Map<String,String> validationRules = new HashMap<String,String>()
-        {{
+        private static final Map<String, String> validationRules = new HashMap<String, String>() {{
             put("byr", "(19[2-8][0-9]|199[0-9]|200[0-2])");
             put("iyr", "(201[0-9]|2020)");
             put("eyr", "(202[0-9]|2030)");
-            put("hgt",  "(1[5-8][0-9]cm|19[0-3]cm|59in|6[0-9]in|7[0-6]in)");
-            put("hcl",  "#[0-9a-f]{6}");
-            put("ecl",  "(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)");
-            put("pid",  "[0-9]{9}$");
+            put("hgt", "(1[5-8][0-9]cm|19[0-3]cm|59in|6[0-9]in|7[0-6]in)");
+            put("hcl", "#[0-9a-f]{6}");
+            put("ecl", "(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)");
+            put("pid", "[0-9]{9}$");
         }};
 
-        public Passport(String[] fields) {
-            this.fields = Arrays.stream(fields).map(this::parseField).collect(Collectors.toList());
+        Passport(String[] fields) {
+            this.fields = Arrays.stream(fields).map(this::parseField).collect(Collectors.toSet());
         }
 
         boolean isValid() {
             return fields.stream()
                 .filter(f -> !("cid").equals(f.name))
                 .allMatch(f -> f.value.matches(validationRules.get(f.name)));
+        }
+
+        boolean containsMandatoryFields() {
+            return validationRules.keySet().stream().allMatch(k -> fields.stream().map(f -> f.name).anyMatch(n -> n.equals(k)));
         }
 
         private Field parseField(String field) {
@@ -171,6 +157,5 @@ public class PassportProcessing {
                 this.value = value;
             }
         }
-
     }
 }
