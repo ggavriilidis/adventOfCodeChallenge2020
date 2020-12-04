@@ -70,7 +70,7 @@ public class PasswordValidator {
     }
 
     private Stream<Validator> getValidatorStream() {
-        return getInputStreamFromFile("passwords-input.txt")
+        return getInputStreamFromFile()
             .map(s -> s.split(" "))
             .map(this::toValidator);
     }
@@ -83,10 +83,10 @@ public class PasswordValidator {
         ), array[1].charAt(0), array[2]);
     }
 
-    private Stream<String> getInputStreamFromFile(String fileName) {
+    private Stream<String> getInputStreamFromFile() {
         try {
             return Files.lines(Paths.get(getClass().getClassLoader()
-                .getResource(fileName).toURI()));
+                .getResource("passwords-input.txt").toURI()));
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }

@@ -59,8 +59,7 @@ public class ReportRepair {
     public int getProductOfTwo() {
         Map<Integer, Integer> map = numbers.stream().collect(Collectors.toMap(n -> n, n -> n));
 
-        for (int i = 0; i < numbers.size(); i++) {
-            Integer currentNum = numbers.get(i);
+        for (Integer currentNum : numbers) {
             Integer otherNum = map.get(2020 - currentNum);
             if (otherNum != null) {
                 System.out.println("this num = " + currentNum);
@@ -77,15 +76,14 @@ public class ReportRepair {
         Map<Integer, Integer> map = numbers.stream().collect(Collectors.toMap(n -> n, n -> n));
         List<Integer> sumOfTwo = numbers.stream().map(n -> 2020 - n).collect(Collectors.toList());
 
-        for (int i = 0; i < sumOfTwo.size(); i++) {
-            Integer currentSumOfTwo = sumOfTwo.get(i);
-            for (int j = 0; j < numbers.size(); j++) {
-                Integer first = map.get(currentSumOfTwo - numbers.get(j));
+        for (Integer currentSumOfTwo : sumOfTwo) {
+            for (Integer number : numbers) {
+                Integer first = map.get(currentSumOfTwo - number);
                 if (first != null) {
                     System.out.println("first num = " + first);
-                    int second = sumOfTwo.get(i) - first;
+                    int second = currentSumOfTwo - first;
                     System.out.println("second num = " + second);
-                    int third = 2020 - sumOfTwo.get(i);
+                    int third = 2020 - currentSumOfTwo;
                     System.out.println("third num = " + third);
                     int result = first * second * third;
                     System.out.println("result = " + result);

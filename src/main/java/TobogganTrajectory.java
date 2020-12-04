@@ -115,17 +115,15 @@ public class TobogganTrajectory {
 
 
     private List<String> processFile() {
-        List<String> completeLines = new ArrayList<>();
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("toboggan-trajectory-input.txt").toURI());
                 List<String> lines = Files.lines(path)
                     .collect(Collectors.toList());
-                completeLines = lines.stream().map(line -> multiplyLineWidth(line, lines.size())).collect(Collectors.toList());
+                return lines.stream().map(line -> multiplyLineWidth(line, lines.size())).collect(Collectors.toList());
         } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return completeLines;
     }
 
     private String multiplyLineWidth(String line, int size) {
