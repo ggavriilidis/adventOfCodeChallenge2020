@@ -4,7 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -62,12 +64,46 @@ import java.util.stream.Collectors;
  *
  * Count the number of valid passports - those that have all required fields. Treat cid as optional. In your batch
  * file, how many passports are valid?
+ *
+ * --- Part Two ---
+ * The line is moving more quickly now, but you overhear airport security talking about how passports with invalid
+ * data are getting through. Better add some data validation, quick!
+ *
+ * You can continue to ignore the cid field, but each other field has strict rules about what values are valid for
+ * automatic validation:
+ *
+ * byr (Birth Year) - four digits; at least 1920 and at most 2002.
+ * iyr (Issue Year) - four digits; at least 2010 and at most 2020.
+ * eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
+ * hgt (Height) - a number followed by either cm or in:
+ * If cm, the number must be at least 150 and at most 193.
+ * If in, the number must be at least 59 and at most 76.
+ * hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
+ * ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
+ * pid (Passport ID) - a nine-digit number, including leading zeroes.
+ * cid (Country ID) - ignored, missing or not.
+ * Your job is to count the passports where all required fields are both present and valid according to the above
+ * rules. Here are some example values:
  */
 public class PassportProcessing {
 
+    List<String> passports;
+
+    public PassportProcessing() {
+        this.passports = processFile();
+    }
+
+    public long countPassportsWithMandatoryFieldsPresent() {
+        return passports.stream().filter(this::containsMandatoryFields).count();
+    }
+
     public long countValidPassports() {
-        List<String> passports = processFile();
-        return passports.stream().filter(p -> isValid(p)).count();
+        return passports.stream().
+            filter(this::containsMandatoryFields)
+            .map(p -> p.split(" "))
+            .map(Passport::new)
+            .filter(Passport::isValid)
+            .count();
     }
 
     private List<String> processFile() {
@@ -75,13 +111,16 @@ public class PassportProcessing {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("passport-processing.txt").toURI());
             return Arrays.asList(Files.lines(path)
-                .collect(Collectors.joining("\n")).split("(?m)^\\n"));
+                .collect(Collectors.joining("\n")).split("(?m)^\\n"))
+                .stream()
+                .map(s -> s.replaceAll("\\n", " "))
+                .collect(Collectors.toList());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private boolean isValid(String passport) {
+    private boolean containsMandatoryFields(String passport) {
         List<String> requiredFields = Arrays.asList(
             "byr",
             "iyr",
@@ -92,5 +131,46 @@ public class PassportProcessing {
             "pid"
         );
         return requiredFields.stream().allMatch(passport::contains);
+    }
+
+    private static class Passport {
+        List<Field> fields;
+
+        private static final Map<String,String> validationRules = new HashMap<String,String>()
+        {{
+            put("byr", "(19[2-8][0-9]|199[0-9]|200[0-2])");
+            put("iyr", "(201[0-9]|2020)");
+            put("eyr", "(202[0-9]|2030)");
+            put("hgt",  "(1[5-8][0-9]cm|19[0-3]cm|59in|6[0-9]in|7[0-6]in)");
+            put("hcl",  "#[0-9a-f]{6}");
+            put("ecl",  "(amb)|(blu)|(brn)|(gry)|(grn)|(hzl)|(oth)");
+            put("pid",  "[0-9]{9}$");
+        }};
+
+        public Passport(String[] fields) {
+            this.fields = Arrays.stream(fields).map(this::parseField).collect(Collectors.toList());
+        }
+
+        boolean isValid() {
+            return fields.stream()
+                .filter(f -> !("cid").equals(f.name))
+                .allMatch(f -> f.value.matches(validationRules.get(f.name)));
+        }
+
+        private Field parseField(String field) {
+            String[] nameValue = field.split(":");
+            return new Field(nameValue[0], nameValue[1]);
+        }
+
+        private static class Field {
+            private String name;
+            private String value;
+
+            public Field(String name, String value) {
+                this.name = name;
+                this.value = value;
+            }
+        }
+
     }
 }
