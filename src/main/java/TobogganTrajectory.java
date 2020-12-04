@@ -91,7 +91,6 @@ public class TobogganTrajectory {
 
     private List<String> completeLines;
 
-
     public TobogganTrajectory() {
         this.completeLines = processFile();
     }
@@ -100,27 +99,29 @@ public class TobogganTrajectory {
         int treeCount = 0;
 
         int j = right;
-        for (int i = down;  i < completeLines.size(); i += down) {
-                if (completeLines.get(i).charAt(j) == '#') {
-                    treeCount++;
-                }
-                j += right;
+        for (int i = down; i < completeLines.size(); i += down) {
+            if (completeLines.get(i).charAt(j) == '#') {
+                treeCount++;
             }
+            j += right;
+        }
         return treeCount;
     }
 
     public long getProductOfNumberOfTrees(List<Slope> slopes) {
-        return slopes.stream().map(s -> getNumberOfTrees(s.right, s.down)).map(Integer::longValue).reduce(1L, (a, b) -> a * b);
+        return slopes.stream()
+            .map(s -> getNumberOfTrees(s.right, s.down))
+            .map(Integer::longValue)
+            .reduce(1L, (a, b) -> a * b);
     }
-
 
     private List<String> processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("toboggan-trajectory-input.txt").toURI());
-                List<String> lines = Files.lines(path)
-                    .collect(Collectors.toList());
-                return lines.stream().map(line -> multiplyLineWidth(line, lines.size())).collect(Collectors.toList());
+            List<String> lines = Files.lines(path)
+                .collect(Collectors.toList());
+            return lines.stream().map(line -> multiplyLineWidth(line, lines.size())).collect(Collectors.toList());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -129,7 +130,7 @@ public class TobogganTrajectory {
     private String multiplyLineWidth(String line, int size) {
         int factor = size * 3 - 1;
         StringBuilder sb = new StringBuilder(line);
-        for (int i = 0; i < factor; i++){
+        for (int i = 0; i < factor; i++) {
             sb.append(line);
         }
         return sb.toString();
