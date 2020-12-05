@@ -141,7 +141,7 @@ public class PassportProcessing {
         }
 
         boolean containsMandatoryFields() {
-            return validationRules.keySet().stream().allMatch(k -> fieldsToValues.containsKey(k));
+            return validationRules.keySet().stream().allMatch(fieldsToValues::containsKey);
         }
     }
 }
