@@ -117,7 +117,7 @@ public class PassportProcessing {
     }
 
     private static class Passport {
-        Set<Field> fields;
+        Map<String, String> fieldsToValues;
 
         private static final Map<String, String> validationRules = new HashMap<String, String>() {{
             put("byr", "(19[2-8][0-9]|199[0-9]|200[0-2])");
@@ -130,32 +130,18 @@ public class PassportProcessing {
         }};
 
         Passport(String[] fields) {
-            this.fields = Arrays.stream(fields).map(this::parseField).collect(Collectors.toSet());
+            this.fieldsToValues = Arrays.stream(fields).collect(Collectors.toMap(k -> k.split(":")[0], k -> k.split(":")[1]));
         }
 
         boolean isValid() {
-            return fields.stream()
-                .filter(f -> !("cid").equals(f.name))
-                .allMatch(f -> f.value.matches(validationRules.get(f.name)));
+            return fieldsToValues.entrySet()
+                .stream()
+                .filter(f -> !("cid").equals(f.getKey()))
+                .allMatch(f -> f.getValue().matches(validationRules.get(f.getKey())));
         }
 
         boolean containsMandatoryFields() {
-            return validationRules.keySet().stream().allMatch(k -> fields.stream().map(f -> f.name).anyMatch(n -> n.equals(k)));
-        }
-
-        private Field parseField(String field) {
-            String[] nameValue = field.split(":");
-            return new Field(nameValue[0], nameValue[1]);
-        }
-
-        private static class Field {
-            private String name;
-            private String value;
-
-            public Field(String name, String value) {
-                this.name = name;
-                this.value = value;
-            }
+            return validationRules.keySet().stream().allMatch(k -> fieldsToValues.containsKey(k));
         }
     }
 }
