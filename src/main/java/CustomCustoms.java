@@ -96,52 +96,48 @@ import java.util.stream.Stream;
  */
 public class CustomCustoms {
 
+    List<String> groupAnswers;
 
     public CustomCustoms() {
+        this.groupAnswers = processFile();
     }
 
     public int countTheSumOfAllYesAnswersAnyone() {
-        List<String> groupAnswers = processFile()
+        List<String> groupAnswers = this.groupAnswers
+            .stream()
             .map(s -> s.replaceAll("\\n", ""))
             .collect(Collectors.toList());
-        Stream<Stream<Character>> streamStream = groupAnswers.stream()
-            .map(gA -> gA.chars().mapToObj(c -> (char) c));
-        return streamStream
+        return groupAnswers.stream()
+            .map(gA -> gA.chars().mapToObj(c1 -> (char) c1))
             .map(chars ->
                 chars.collect(Collectors.groupingBy(c -> c)))
             .map(Map::size).mapToInt(i -> i).sum();
     }
 
     public int countTheSumOfAllYesAnswersEveryone() {
-        List<String[]> groupAnswers = processFile()
+        List<String[]> groupAnswers = this.groupAnswers
+            .stream()
             .map(s -> s.split("\\n"))
             .collect(Collectors.toList());
 
-        Map<String[], Integer> answersToNumberOfRespondents = groupAnswers.stream().collect(Collectors.toMap(a -> a, a -> a.length));
        return groupAnswers
             .stream()
-            .map(answersPerGroup -> {
-                Map<Character, Long> ansToNumOfOccurrenencesInGroup = Arrays.asList(answersPerGroup)
-                    .stream()
-                    .flatMap(ans -> ans.chars().mapToObj(c -> (char) c))
-                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-                long count = ansToNumOfOccurrenencesInGroup
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getValue() == answersPerGroup.length)
-                    .count();
-                return count;
-                }
+            .map(answersPerGroup -> Arrays.stream(answersPerGroup)
+                .flatMap(ans -> ans.chars().mapToObj(c -> (char) c))
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue() == answersPerGroup.length)
+                .count()
             )
             .mapToInt(Long::intValue).sum();
     }
 
-    private Stream<String> processFile() {
+    private List<String> processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("custom-customs-input.txt").toURI());
-            return Arrays.stream(Files.lines(path)
+            return Arrays.asList(Files.lines(path)
                 .collect(Collectors.joining("\n")).split("(?m)^\\n"));
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
