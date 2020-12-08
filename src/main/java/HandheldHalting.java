@@ -121,12 +121,12 @@ public class HandheldHalting {
         AtomicInteger previousIndexChanged = new AtomicInteger(-1);
         Map.Entry<Boolean, Integer> isTerminatingToAccum;
         while (!(isTerminatingToAccum = isTerminatingToAccum(instructions)).getKey()) {
-            updateJumpAtIndex(instructions, previousIndexChanged);
+            updateJumpToNopAtIndex(instructions, previousIndexChanged);
         }
         return isTerminatingToAccum.getValue();
     }
 
-    private void updateJumpAtIndex(List<Map.Entry<String, Integer>> entries, AtomicInteger latestIndexChanged) {
+    private void updateJumpToNopAtIndex(List<Map.Entry<String, Integer>> entries, AtomicInteger latestIndexChanged) {
         for (int j = latestIndexChanged.get() == -1 ? 0 : latestIndexChanged.get(); j < entries.size(); j ++) {
             if (entries.get(j).getKey().equals("jmp")) {
                 updateInstructions(entries, latestIndexChanged, j);
