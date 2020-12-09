@@ -66,6 +66,40 @@ import java.util.stream.Collectors;
  * The first step of attacking the weakness in the XMAS data is to find the first number in the list (after the
  * preamble) which is not the sum of two of the 25 numbers before it. What is the first number that does not have
  * this property?
+ *
+ * --- Part Two ---
+ * The final step in breaking the XMAS encryption relies on the invalid number you just found: you must find a
+ * contiguous set of at least two numbers in your list which sum to the invalid number from step 1.
+ *
+ * Again consider the above example:
+ *
+ * 35
+ * 20
+ * 15
+ * 25
+ * 47
+ * 40
+ * 62
+ * 55
+ * 65
+ * 95
+ * 102
+ * 117
+ * 150
+ * 182
+ * 127
+ * 219
+ * 299
+ * 277
+ * 309
+ * 576
+ * In this list, adding up all of the numbers from 15 through 40 produces the invalid number from step 1, 127. (Of
+ * course, the contiguous set of numbers in your actual list might be much longer.)
+ *
+ * To find the encryption weakness, add together the smallest and largest number in this contiguous range; in this
+ * example, these are 15 and 47, producing 62.
+ *
+ * What is the encryption weakness in your XMAS-encrypted list of numbers?
  */
 public class EncodingError {
 
@@ -85,7 +119,63 @@ public class EncodingError {
         return 0;
     }
 
-    public boolean hasTwoSummands(List<Long> numbers, long sum) {
+    public long calculateContiguousSetOfNumbersWhichSumToTheInvalidNumber(int preamble) {
+        List<Long> summands = calculateSublistWithContiguousSummands(preamble).stream().sorted().collect(Collectors.toList());
+        return summands.get(0) + summands.get(summands.size() - 1);
+    }
+
+    private List<Long> calculateSublistWithContiguousSummands(int preamble) {
+        long invalidNumber = calculateNumberWhichIsNotTheSumOfPreviousNumbers(preamble);
+        long sum;
+        for (int i = 0; i < numbers.size() - 1; i ++) {
+            sum = numbers.get(i);
+            for (int j = i + 1; j < numbers.size(); j ++) {
+                sum += numbers.get(j);
+                if (sum == invalidNumber) {
+                    return numbers.subList(i, j + 1);
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+//    public long calculateContiguousSetOfNumbersWhichSumToTheInvalidNumber(int preamble) {
+//        long invalidNumber = calculateNumberWhichIsNotTheSumOfPreviousNumbers(preamble);
+//        int i = 1;
+//        Map.Entry<Boolean, Long> isSameAsInvalidToMaxIndex= calculateMaxIndexWindow(invalidNumber);
+//        List<Long> setOfSummands;
+//        int maxIndex = isSameAsInvalidToMaxIndex.getValue().intValue();
+//        if (isSameAsInvalidToMaxIndex.getKey()) {
+//            setOfSummands = numbers.subList(i - 1, maxIndex).stream().sorted().collect(Collectors.toList());
+//            return setOfSummands.get(0) + setOfSummands.get(setOfSummands.size() - 1);
+//        }
+//        long sum = numbers.stream().mapToLong(l -> l).limit(maxIndex + 1).sum();
+//        while (sum != invalidNumber) {
+//            sum -= numbers.get(i - 1);
+//            sum += numbers.get(maxIndex + 1);
+//            i ++;
+//            maxIndex ++;
+//        }
+//        setOfSummands = numbers.subList(i - 1, maxIndex).stream().sorted().collect(Collectors.toList());
+//        return setOfSummands.get(0) + setOfSummands.get(setOfSummands.size() - 1);
+//    }
+
+    private Map.Entry<Boolean, Long> calculateMaxIndexWindow(long invalidNumber) {
+        int i = 0;
+        long sum = numbers.get(0);
+
+        while (sum < invalidNumber) {
+            sum += numbers.get(i);
+            i ++;
+        }
+        if (sum == invalidNumber) {
+            return Map.entry(true, (long) i);
+        } else {
+            return Map.entry(false, (long) i - 1);
+        }
+    }
+
+    private boolean hasTwoSummands(List<Long> numbers, long sum) {
         Map<Long, Long> map = numbers.stream().collect(Collectors.toMap(n -> n, n -> n));
 
         for (Long currentNum : numbers) {
