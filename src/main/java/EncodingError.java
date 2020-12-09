@@ -139,42 +139,6 @@ public class EncodingError {
         return new ArrayList<>();
     }
 
-//    public long calculateContiguousSetOfNumbersWhichSumToTheInvalidNumber(int preamble) {
-//        long invalidNumber = calculateNumberWhichIsNotTheSumOfPreviousNumbers(preamble);
-//        int i = 1;
-//        Map.Entry<Boolean, Long> isSameAsInvalidToMaxIndex= calculateMaxIndexWindow(invalidNumber);
-//        List<Long> setOfSummands;
-//        int maxIndex = isSameAsInvalidToMaxIndex.getValue().intValue();
-//        if (isSameAsInvalidToMaxIndex.getKey()) {
-//            setOfSummands = numbers.subList(i - 1, maxIndex).stream().sorted().collect(Collectors.toList());
-//            return setOfSummands.get(0) + setOfSummands.get(setOfSummands.size() - 1);
-//        }
-//        long sum = numbers.stream().mapToLong(l -> l).limit(maxIndex + 1).sum();
-//        while (sum != invalidNumber) {
-//            sum -= numbers.get(i - 1);
-//            sum += numbers.get(maxIndex + 1);
-//            i ++;
-//            maxIndex ++;
-//        }
-//        setOfSummands = numbers.subList(i - 1, maxIndex).stream().sorted().collect(Collectors.toList());
-//        return setOfSummands.get(0) + setOfSummands.get(setOfSummands.size() - 1);
-//    }
-
-    private Map.Entry<Boolean, Long> calculateMaxIndexWindow(long invalidNumber) {
-        int i = 0;
-        long sum = numbers.get(0);
-
-        while (sum < invalidNumber) {
-            sum += numbers.get(i);
-            i ++;
-        }
-        if (sum == invalidNumber) {
-            return Map.entry(true, (long) i);
-        } else {
-            return Map.entry(false, (long) i - 1);
-        }
-    }
-
     private boolean hasTwoSummands(List<Long> numbers, long sum) {
         Map<Long, Long> map = numbers.stream().collect(Collectors.toMap(n -> n, n -> n));
 
