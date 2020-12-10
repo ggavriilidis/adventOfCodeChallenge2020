@@ -58,7 +58,6 @@ public class HandyHaversacks {
     }
 
     public int countBagColoursThatContainColour(String colour) {
-        Map<String, Set<String>> bagContainsToBagsContained = processFile();
         return countNumOfColours(contentsToBagsThaContainThem.get(colour), colour, new HashSet<>());
     }
 
