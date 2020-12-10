@@ -51,8 +51,11 @@ import java.util.stream.Collectors;
 
 public class HandyHaversacks {
 
-    private Map<String, Set<String>> bagToContents;
     private Map<String, Set<String>> contentsToBagsThaContainThem;
+
+    public HandyHaversacks() {
+        this.contentsToBagsThaContainThem = processFile();
+    }
 
     public int countBagColoursThatContainColour(String colour) {
         Map<String, Set<String>> bagContainsToBagsContained = processFile();
@@ -73,10 +76,10 @@ public class HandyHaversacks {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("handy-haversacks-input.txt").toURI());
-            this.bagToContents = Files.lines(path)
+            Map<String, Set<String>> bagToContents = Files.lines(path)
                 .map(this::processLine)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            this.contentsToBagsThaContainThem = new HashMap<>();
+            Map<String, Set<String>> contentsToBagsThaContainThem = new HashMap<>();
             for (Map.Entry<String, Set<String>> bagToContentsEntry : bagToContents.entrySet()) {
                 for (String bagContained : bagToContentsEntry.getValue()) {
                     contentsToBagsThaContainThem.computeIfPresent(bagContained, (bag, bags) -> {bags.add(bagToContentsEntry.getKey()); return bags;});
@@ -84,7 +87,7 @@ public class HandyHaversacks {
                 }
             }
 
-            return bagToContents;
+            return contentsToBagsThaContainThem;
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
