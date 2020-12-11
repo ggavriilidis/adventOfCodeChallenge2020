@@ -52,55 +52,76 @@ import java.util.stream.Collectors;
 public class HandyHaversacks {
 
     private Map<String, Set<String>> contentsToBagsThaContainThem;
+    private Map<String, Set<Map.Entry<String, Integer>>> bagToContentsToNumbers;
 
     public HandyHaversacks() {
-        this.contentsToBagsThaContainThem = processFile();
+        processFile();
     }
 
     public int countBagColoursThatContainColour(String colour) {
-        return countNumOfColours(contentsToBagsThaContainThem.get(colour), colour, new HashSet<>());
+        return countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(colour), colour, new HashSet<>());
     }
 
-    private int countNumOfColours(Set<String> bagsThatContainColour, String colour, Set<String> acc) {
+//    public int countNumOfBagsABagCanContain(String colour) {
+//        return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour), colour, new HashSet<>());
+//    }
+
+    private int countNumOfColoursAColourCanBeContainedIn(Set<String> bagsThatContainColour, String colour, Set<String> acc) {
         for (String bag : bagsThatContainColour) {
             acc.addAll(bagsThatContainColour);
             if (this.contentsToBagsThaContainThem.containsKey(bag)) {
-                countNumOfColours(contentsToBagsThaContainThem.get(bag), bag, acc);
+                countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(bag), bag, acc);
             }
         }
         return acc.size();
     }
 
-    private Map<String, Set<String>> processFile() {
+//    private int countNumOfBagsABagCanContain(Set<Map.Entry<String, Integer>> contents, String colour, Set<String> acc) {
+//        //acc has to be a Map of bag to number - bagToContents has to be a map of map
+//        for (Map.Entry<String, Integer> bag : contents) {
+//            acc.addAll(contents);
+//            if (this.bagToContentsToNumbers.containsKey(bag)) {
+//                countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag), bag, acc);
+//            }
+//        }
+//        return acc.size();
+//    }
+
+    private void processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("handy-haversacks-input.txt").toURI());
-            Map<String, Set<String>> bagToContents = Files.lines(path)
+            this.bagToContentsToNumbers = Files.lines(path)
                 .map(this::processLine)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            Map<String, Set<String>> contentsToBagsThaContainThem = new HashMap<>();
-            for (Map.Entry<String, Set<String>> bagToContentsEntry : bagToContents.entrySet()) {
-                for (String bagContained : bagToContentsEntry.getValue()) {
-                    contentsToBagsThaContainThem.computeIfPresent(bagContained, (bag, bags) -> {bags.add(bagToContentsEntry.getKey()); return bags;});
-                    contentsToBagsThaContainThem.putIfAbsent(bagContained, new HashSet<>(Arrays.asList(bagToContentsEntry.getKey())));
+            this.contentsToBagsThaContainThem = new HashMap<>();
+            //Entry<String,Set<String>>
+            Set<Map.Entry<String, Set<Map.Entry<String, Integer>>>> bagToContentsToNumbersEntries = bagToContentsToNumbers.entrySet();
+            for (Map.Entry<String, Set<Map.Entry<String, Integer>>> bagToContentsToNumbersEntry : bagToContentsToNumbersEntries) {
+                Set<String> value = bagToContentsToNumbersEntry.getValue().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+                for (String bagContained : value) {
+                    contentsToBagsThaContainThem.computeIfPresent(bagContained, (bag, bags) -> {bags.add(bagToContentsToNumbersEntry.getKey()); return bags;});
+                    contentsToBagsThaContainThem.putIfAbsent(bagContained, new HashSet<>(Arrays.asList(bagToContentsToNumbersEntry.getKey())));
                 }
             }
-
-            return contentsToBagsThaContainThem;
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Map.Entry<String, Set<String>> processLine(String line) {
+    private Map.Entry<String, Set<Map.Entry<String, Integer>>> processLine(String line) {
         int indexToSplit = line.indexOf("contain");
         String bagContains = line.substring(0, indexToSplit - "bags".length() - 2);
         String bagsContained = line.substring(indexToSplit + "contain".length() + 1);
-        Set<String> bagsContainedSet = Arrays.asList(bagsContained.split(","))
+        if (bagsContained.contains("other bags")) {
+            return Map.entry(bagContains, new HashSet<>());
+        }
+        Set<Map.Entry<String, Integer>> bagsContainedSet = Arrays.asList(bagsContained.split(","))
             .stream()
             .map(String::trim)
             .map(s -> s.split(" "))
-            .map(s -> s[1] + " " + s[2])
+            //create a map here - key colour (ind 1 and 2) value number (ind 0)
+            .map(s -> Map.entry(s[1] + " " + s[2], Integer.valueOf(s[0])))
             .collect(Collectors.toSet());
         return Map.entry(bagContains, bagsContainedSet);
     }
