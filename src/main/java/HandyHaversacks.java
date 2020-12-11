@@ -97,7 +97,7 @@ public class HandyHaversacks {
     }
 
     public long countNumOfBagsABagCanContain(String colour) {
-        return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour), 0);
+        return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour));
     }
 
     private int countNumOfColoursAColourCanBeContainedIn(Set<String> bagsThatContainColour, String colour, Set<String> acc) {
@@ -110,9 +110,10 @@ public class HandyHaversacks {
         return acc.size();
     }
 
-    private long countNumOfBagsABagCanContain(Map<String, Integer> bagsToContentsToNumbers, long acc) {
+    private long countNumOfBagsABagCanContain(Map<String, Integer> bagsToContentsToNumbers) {
+        long acc = 0;
         for (Map.Entry<String, Integer> bag : bagsToContentsToNumbers.entrySet()) {
-            acc+= bag.getValue() + bag.getValue() * countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag.getKey()), 0);
+            acc += bag.getValue() + bag.getValue() * countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag.getKey()));
         }
         return acc;
     }
