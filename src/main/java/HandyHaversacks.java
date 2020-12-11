@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
 public class HandyHaversacks {
 
     private Map<String, Set<String>> contentsToBagsThaContainThem;
-    private Map<String, Set<Map.Entry<String, Integer>>> bagToContentsToNumbers;
+    private Map<String, Map<String, Integer>> bagToContentsToNumbers;
 
     public HandyHaversacks() {
         processFile();
@@ -110,8 +110,8 @@ public class HandyHaversacks {
         return acc.size();
     }
 
-    private long countNumOfBagsABagCanContain(Set<Map.Entry<String, Integer>> bagsToContentsToNumbers, long acc) {
-        for (Map.Entry<String, Integer> bag : bagsToContentsToNumbers) {
+    private long countNumOfBagsABagCanContain(Map<String, Integer> bagsToContentsToNumbers, long acc) {
+        for (Map.Entry<String, Integer> bag : bagsToContentsToNumbers.entrySet()) {
             acc+= bag.getValue() + bag.getValue() * countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag.getKey()), 0);
         }
         return acc;
@@ -125,9 +125,9 @@ public class HandyHaversacks {
                 .map(this::processLine)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             this.contentsToBagsThaContainThem = new HashMap<>();
-            Set<Map.Entry<String, Set<Map.Entry<String, Integer>>>> bagToContentsToNumbersEntries = bagToContentsToNumbers.entrySet();
-            for (Map.Entry<String, Set<Map.Entry<String, Integer>>> bagToContentsToNumbersEntry : bagToContentsToNumbersEntries) {
-                Set<String> value = bagToContentsToNumbersEntry.getValue().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+            Set<Map.Entry<String, Map<String, Integer>>> bagToContentsToNumbersEntries = bagToContentsToNumbers.entrySet();
+            for (Map.Entry<String, Map<String, Integer>> bagToContentsToNumbersEntry : bagToContentsToNumbersEntries) {
+                Set<String> value = bagToContentsToNumbersEntry.getValue().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
                 for (String bagContained : value) {
                     contentsToBagsThaContainThem.computeIfPresent(bagContained, (bag, bags) -> {bags.add(bagToContentsToNumbersEntry.getKey()); return bags;});
                     contentsToBagsThaContainThem.putIfAbsent(bagContained, new HashSet<>(Arrays.asList(bagToContentsToNumbersEntry.getKey())));
@@ -138,20 +138,19 @@ public class HandyHaversacks {
         }
     }
 
-    private Map.Entry<String, Set<Map.Entry<String, Integer>>> processLine(String line) {
+    private Map.Entry<String, Map<String, Integer>> processLine(String line) {
         int indexToSplit = line.indexOf("contain");
         String bagContains = line.substring(0, indexToSplit - "bags".length() - 2);
         String bagsContained = line.substring(indexToSplit + "contain".length() + 1);
         if (bagsContained.contains("other bags")) {
-            return Map.entry(bagContains, new HashSet<>());
+            return Map.entry(bagContains, new HashMap<>());
         }
-        Set<Map.Entry<String, Integer>> bagsContainedSet = Arrays.asList(bagsContained.split(","))
+        Map<String, Integer> bagsContainedSet = Arrays.asList(bagsContained.split(","))
             .stream()
             .map(String::trim)
             .map(s -> s.split(" "))
             //create a map here - key colour (ind 1 and 2) value number (ind 0)
-            .map(s -> Map.entry(s[1] + " " + s[2], Integer.valueOf(s[0])))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toMap(s -> s[1] + " " + s[2], s -> Integer.valueOf(s[0])));
         return Map.entry(bagContains, bagsContainedSet);
     }
 }
