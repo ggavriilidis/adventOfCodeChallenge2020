@@ -15,6 +15,6 @@ class HandyHaversacksTest {
     void shouldCountNumberOfBagsABagCanContain() {
         HandyHaversacks handyHaversacks = new HandyHaversacks();
 
-//        assertEquals(4, handyHaversacks.countNumOfBagsABagCanContain("shiny gold"));
+        assertEquals(32, handyHaversacks.countNumOfBagsABagCanContain("shiny gold"));
     }
 }

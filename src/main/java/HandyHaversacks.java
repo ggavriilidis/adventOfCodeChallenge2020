@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +63,9 @@ public class HandyHaversacks {
         return countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(colour), colour, new HashSet<>());
     }
 
-//    public int countNumOfBagsABagCanContain(String colour) {
-//        return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour), colour, new HashSet<>());
-//    }
+    public long countNumOfBagsABagCanContain(String colour) {
+        return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour), colour, new AtomicLong(0));
+    }
 
     private int countNumOfColoursAColourCanBeContainedIn(Set<String> bagsThatContainColour, String colour, Set<String> acc) {
         for (String bag : bagsThatContainColour) {
@@ -76,16 +77,15 @@ public class HandyHaversacks {
         return acc.size();
     }
 
-//    private int countNumOfBagsABagCanContain(Set<Map.Entry<String, Integer>> contents, String colour, Set<String> acc) {
-//        //acc has to be a Map of bag to number - bagToContents has to be a map of map
-//        for (Map.Entry<String, Integer> bag : contents) {
-//            acc.addAll(contents);
-//            if (this.bagToContentsToNumbers.containsKey(bag)) {
-//                countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag), bag, acc);
-//            }
-//        }
-//        return acc.size();
-//    }
+    private long countNumOfBagsABagCanContain(Set<Map.Entry<String, Integer>> bagsToContentsToNumbers, String colour, AtomicLong acc) {
+        for (Map.Entry<String, Integer> bag : bagsToContentsToNumbers) {
+             acc.getAndAdd(bag.getValue());
+            if (this.bagToContentsToNumbers.containsKey(bag.getKey())) {
+                countNumOfBagsABagCanContain(bagToContentsToNumbers.get(bag.getKey()), bag.getKey(), acc);
+            }
+        }
+        return acc.get();
+    }
 
     private void processFile() {
         try {
