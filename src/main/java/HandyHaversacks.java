@@ -93,18 +93,18 @@ public class HandyHaversacks {
     }
 
     public int countBagColoursThatContainColour(String colour) {
-        return countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(colour), colour, new HashSet<>());
+        return countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(colour), new HashSet<>());
     }
 
     public long countNumOfBagsABagCanContain(String colour) {
         return countNumOfBagsABagCanContain(bagToContentsToNumbers.get(colour));
     }
 
-    private int countNumOfColoursAColourCanBeContainedIn(Set<String> bagsThatContainColour, String colour, Set<String> acc) {
+    private int countNumOfColoursAColourCanBeContainedIn(Set<String> bagsThatContainColour, Set<String> acc) {
         for (String bag : bagsThatContainColour) {
             acc.addAll(bagsThatContainColour);
             if (this.contentsToBagsThaContainThem.containsKey(bag)) {
-                countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(bag), bag, acc);
+                countNumOfColoursAColourCanBeContainedIn(contentsToBagsThaContainThem.get(bag), acc);
             }
         }
         return acc.size();
