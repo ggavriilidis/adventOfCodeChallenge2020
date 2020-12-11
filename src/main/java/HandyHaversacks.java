@@ -95,7 +95,6 @@ public class HandyHaversacks {
                 .map(this::processLine)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             this.contentsToBagsThaContainThem = new HashMap<>();
-            //Entry<String,Set<String>>
             Set<Map.Entry<String, Set<Map.Entry<String, Integer>>>> bagToContentsToNumbersEntries = bagToContentsToNumbers.entrySet();
             for (Map.Entry<String, Set<Map.Entry<String, Integer>>> bagToContentsToNumbersEntry : bagToContentsToNumbersEntries) {
                 Set<String> value = bagToContentsToNumbersEntry.getValue().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
