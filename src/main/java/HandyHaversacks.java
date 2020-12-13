@@ -150,7 +150,6 @@ public class HandyHaversacks {
             .stream()
             .map(String::trim)
             .map(s -> s.split(" "))
-            //create a map here - key colour (ind 1 and 2) value number (ind 0)
             .collect(Collectors.toMap(s -> s[1] + " " + s[2], s -> Integer.valueOf(s[0])));
         return Map.entry(bagContains, bagsContainedSet);
     }
