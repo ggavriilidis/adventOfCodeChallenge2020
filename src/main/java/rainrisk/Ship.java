@@ -1,7 +1,7 @@
 package rainrisk;
 
-import java.util.*;
 import java.util.Arrays;
+import java.util.List;
 
 import static rainrisk.Direction.*;
 
@@ -37,13 +37,13 @@ public class Ship {
     }
 
     private void moveForward(Action action) {
-        if (direction == N) {
+        if (N == direction) {
             position.moveNorth(action.getSteps());
-        } else if (direction == S) {
+        } else if (S == direction) {
             position.moveSouth(action.getSteps());
-        } else if (direction == E) {
+        } else if (E == direction) {
             position.moveEast(action.getSteps());
-        } else if (direction == W) {
+        } else if (W == direction) {
             position.moveWest(action.getSteps());
         }
     }
@@ -51,16 +51,17 @@ public class Ship {
     private void turn(Action action) {
         int initialIndex = allDirections.indexOf(direction);
         int finalIndex = 0;
-        int offset = action.getSteps() / 90 % allDirections.size();
+        int numberOfDirections = allDirections.size();
+        int offset = action.getSteps() / 90 % numberOfDirections;
         if (action.isRightTurn()) {
             finalIndex = initialIndex + offset;
             if (finalIndex > 3) {
-                finalIndex -= 4;
+                finalIndex -= numberOfDirections;
             }
         } else if (action.isLeftTurn()) {
             finalIndex = initialIndex - offset;
             if (finalIndex < 0) {
-                finalIndex += 4;
+                finalIndex += numberOfDirections;
             }
         }
         direction = allDirections.get(finalIndex);

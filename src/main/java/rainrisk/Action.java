@@ -1,14 +1,12 @@
 package rainrisk;
 
-import java.util.Optional;
-
 public class Action {
 
     private String action;
 
     private int steps;
 
-    public Action(String action, int steps) {
+    Action(String action, int steps) {
         this.action = action;
         this.steps = steps;
     }
@@ -26,23 +24,23 @@ public class Action {
     }
 
     public boolean isMoveForward() {
-        return "F".endsWith(action);
+        return "F".equals(action);
     }
 
     public boolean isMoveEast() {
-        return "E".endsWith(action);
+        return "E".equals(action);
     }
 
     public boolean isMoveWest() {
-        return "W".endsWith(action);
+        return "W".equals(action);
     }
 
     public boolean isMoveNorth() {
-        return "N".endsWith(action);
+        return "N".equals(action);
     }
 
     public boolean isMoveSouth() {
-        return "S".endsWith(action);
+        return "S".equals(action);
     }
 
     public int getSteps() {

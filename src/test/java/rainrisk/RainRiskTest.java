@@ -9,6 +9,6 @@ class RainRiskTest {
     @Test
     void shouldcalculateManhattanDistance() {
         RainRisk rainRisk = new RainRisk();
-        assertEquals(25, rainRisk.calculateManhattanDistance());
+        assertEquals(2879, rainRisk.calculateManhattanDistance());
     }
 }
