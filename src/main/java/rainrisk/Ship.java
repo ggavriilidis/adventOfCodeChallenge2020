@@ -8,14 +8,14 @@ import static rainrisk.Direction.*;
 public class Ship {
 
     protected static final List<Direction> allDirections = Arrays.asList(N, E, S, W);
-    protected Direction direction = E;
+    private Direction direction = E;
     protected Position position;
 
-    public Ship() {
+    protected Ship() {
         this.position = new Position(0, 0);
     }
 
-    protected Ship(Position position) {
+    public Ship(Position position) {
         this.position = position;
     }
 

@@ -1,8 +1,5 @@
 package rainrisk;
 
-import static rainrisk.Direction.*;
-import static rainrisk.Direction.W;
-
 public class ShipWithWaypoint extends Ship {
 
     private Waypoint waypoint;
@@ -12,23 +9,11 @@ public class ShipWithWaypoint extends Ship {
         this.waypoint = waypoint;
     }
 
-    protected void turn(Action action) {
-        this.waypoint.turn(action);
-    }
-
     public void move(Action action) {
-        if (action.isTurning()) {
-            turn(action);
-        } else if (action.isMoveForward()) {
+        if (action.isMoveForward()) {
             moveForward(action);
-        } else if (action.isMoveNorth()) {
-            waypoint.position.moveNorth(action.getSteps());
-        } else if (action.isMoveSouth()) {
-            waypoint.position.moveSouth(action.getSteps());
-        } else if (action.isMoveEast()) {
-            waypoint.position.moveEast(action.getSteps());
-        } else if (action.isMoveWest()) {
-            waypoint.position.moveWest(action.getSteps());
+        } else {
+            waypoint.move(action);
         }
     }
 
