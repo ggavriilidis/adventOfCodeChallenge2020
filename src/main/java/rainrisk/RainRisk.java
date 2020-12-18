@@ -102,12 +102,16 @@ public class RainRisk {
     public int calculateManhattanDistanceNoWaypoint() {
         ship = new Ship();
         moveShip();
-        return Math.abs(ship.getPosition().getX()) + Math.abs(ship.getPosition().getY());
+        return manhattanDistance();
     }
 
     public int calculateManhattanDistanceWithWaypoint() {
         ship = new ShipWithWaypoint(new Waypoint());
         moveShip();
+        return manhattanDistance();
+    }
+
+    private int manhattanDistance() {
         return Math.abs(ship.getPosition().getX()) + Math.abs(ship.getPosition().getY());
     }
 
@@ -116,7 +120,7 @@ public class RainRisk {
     }
 
 
-    public List<Action> processFile() {
+    private List<Action> processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("rainrisk-input.txt").toURI());
