@@ -7,13 +7,16 @@ import static rainrisk.Direction.*;
 
 public class Ship {
 
-    private static final List<Direction> allDirections = Arrays.asList(N, E, S, W);
-    private Direction direction;
-    private Position position;
+    protected static final List<Direction> allDirections = Arrays.asList(N, E, S, W);
+    protected Direction direction = E;
+    protected Position position;
 
     public Ship() {
-        this.direction = E;
         this.position = new Position(0, 0);
+    }
+
+    protected Ship(Position position) {
+        this.position = position;
     }
 
     public void move(Action action) {
@@ -36,7 +39,7 @@ public class Ship {
         return position;
     }
 
-    private void moveForward(Action action) {
+    protected void moveForward(Action action) {
         if (N == direction) {
             position.moveNorth(action.getSteps());
         } else if (S == direction) {
@@ -48,7 +51,7 @@ public class Ship {
         }
     }
 
-    private void turn(Action action) {
+    protected void turn(Action action) {
         int initialIndex = allDirections.indexOf(direction);
         int finalIndex = 0;
         int numberOfDirections = allDirections.size();
