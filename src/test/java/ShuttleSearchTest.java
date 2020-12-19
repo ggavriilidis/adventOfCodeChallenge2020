@@ -9,4 +9,10 @@ class ShuttleSearchTest {
         ShuttleSearch shuttleSearch = new ShuttleSearch();
         assertEquals(222, shuttleSearch.calculateEarliestBusIdMultipliedByWaitingTimeInMin());
     }
+
+    @Test
+    void shouldCalculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList() {
+        ShuttleSearch shuttleSearch = new ShuttleSearch();
+        assertEquals(779210, shuttleSearch.calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList());
+    }
 }
