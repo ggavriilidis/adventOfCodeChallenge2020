@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.math.BigInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ShuttleSearchTest {
 
@@ -13,6 +15,6 @@ class ShuttleSearchTest {
     @Test
     void shouldCalculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList() {
         ShuttleSearch shuttleSearch = new ShuttleSearch();
-        assertEquals(779210, shuttleSearch.calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList());
+        assertEquals(new BigInteger("408270049879073"), shuttleSearch.calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList());
     }
 }

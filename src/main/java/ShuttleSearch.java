@@ -29,27 +29,28 @@ public class ShuttleSearch {
         return (earliestBusTimeStamp - earliestEstimate) * busId;
     }
 
-    public BigDecimal calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList() {
-        int firstId = Integer.parseInt(busIdsIncludingXs.get(0));
-        long multiplier = 1;
-        long timestamp = firstId * multiplier;
+    public BigInteger calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList() {
+        BigInteger firstId = new BigInteger(busIdsIncludingXs.get(0));
+        BigInteger multiplier = new BigInteger("100000000000000").divide(firstId);
+        BigInteger timestamp = firstId.multiply(multiplier);
         while (!isGivenTimestamp(timestamp)) {
-            timestamp = firstId * ++multiplier;
+            multiplier = multiplier.add(BigInteger.ONE);
+            timestamp = firstId.multiply(multiplier);;
         }
-        return BigDecimal.valueOf(timestamp);
+        return timestamp;
     }
 
-    private boolean isGivenTimestamp(long timestamp) {
+    private boolean isGivenTimestamp(BigInteger timestamp) {
         for (int i = 1; i < busIdsIncludingXs.size(); i++) {
             String currentId = busIdsIncludingXs.get(i);
             if ("x".equals(currentId)) {
-                timestamp++;
+                timestamp = timestamp.add(new BigInteger(busIdsIncludingXs.get(0)));
                 continue;
             } else {
-                if ((timestamp + 1) % Integer.parseInt(currentId) != 0) {
+                if (!((timestamp.add(BigInteger.ONE)).mod(new BigInteger(currentId)).equals(BigInteger.ZERO))) {
                     return false;
                 }
-                timestamp++;
+                timestamp = timestamp.add(new BigInteger(busIdsIncludingXs.get(0)));
             }
         }
         return true;
