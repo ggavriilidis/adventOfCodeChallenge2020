@@ -44,13 +44,13 @@ public class ShuttleSearch {
         for (int i = 1; i < busIdsIncludingXs.size(); i++) {
             String currentId = busIdsIncludingXs.get(i);
             if ("x".equals(currentId)) {
-                timestamp = timestamp.add(new BigInteger(busIdsIncludingXs.get(0)));
+                timestamp = timestamp.add(BigInteger.ONE);
                 continue;
             } else {
                 if (!((timestamp.add(BigInteger.ONE)).mod(new BigInteger(currentId)).equals(BigInteger.ZERO))) {
                     return false;
                 }
-                timestamp = timestamp.add(new BigInteger(busIdsIncludingXs.get(0)));
+                timestamp = timestamp.add(BigInteger.ONE);
             }
         }
         return true;
