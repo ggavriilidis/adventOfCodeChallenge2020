@@ -1,7 +1,4 @@
-import rainrisk.Action;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -10,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ShuttleSearch {
 
@@ -30,30 +26,19 @@ public class ShuttleSearch {
     }
 
     public BigInteger calculateEarliestTimestampSuchThatAllIdsDepartAtOffsetsAsTheirPositionsInTheList() {
-        BigInteger firstId = new BigInteger(busIdsIncludingXs.get(0));
-        BigInteger multiplier = new BigInteger("100000000000000").divide(firstId);
-        BigInteger timestamp = firstId.multiply(multiplier);
-        while (!isGivenTimestamp(timestamp)) {
-            multiplier = multiplier.add(BigInteger.ONE);
-            timestamp = firstId.multiply(multiplier);;
-        }
-        return timestamp;
-    }
+        BigInteger increment = BigInteger.ONE;
+        BigInteger timestamp = BigInteger.ZERO;
 
-    private boolean isGivenTimestamp(BigInteger timestamp) {
-        for (int i = 1; i < busIdsIncludingXs.size(); i++) {
-            String currentId = busIdsIncludingXs.get(i);
-            if ("x".equals(currentId)) {
-                timestamp = timestamp.add(BigInteger.ONE);
-                continue;
-            } else {
-                if (!((timestamp.add(BigInteger.ONE)).mod(new BigInteger(currentId)).equals(BigInteger.ZERO))) {
-                    return false;
+        for (int i = 0; i < busIdsIncludingXs.size(); i++) {
+            String currentBusId = busIdsIncludingXs.get(i);
+            if (!"x".equals(currentBusId)) {
+                while (!timestamp.add(BigInteger.valueOf(i)).mod(new BigInteger(currentBusId)).equals(BigInteger.ZERO)) {
+                    timestamp = timestamp.add(increment);
                 }
-                timestamp = timestamp.add(BigInteger.ONE);
+                increment = increment.multiply(new BigInteger(currentBusId));
             }
         }
-        return true;
+        return timestamp;
     }
 
     private void processFile() {
