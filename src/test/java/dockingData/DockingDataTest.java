@@ -14,4 +14,11 @@ class DockingDataTest {
 
         assertEquals(new BigInteger("11926135976176"), dockingData.memorySum());
     }
+
+    @Test
+    void shouldCalculateMemorySumPartTwo() {
+        DockingData dockingData = new DockingData();
+
+        assertEquals(208, dockingData.memorySumPartTwo());
+    }
 }

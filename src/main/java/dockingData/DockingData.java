@@ -16,11 +16,11 @@ public class DockingData {
     Mask mask = new Mask();
     Map<Integer, BigInteger> memory = new HashMap<>();
 
-    public DockingData() {
-        this.instructions = processFile();
-    }
-
     public BigInteger memorySum() {
+        instructions = processFile()
+                        .stream()
+                        .map(this::toInstruction)
+                        .collect(Collectors.toList());
         instructions
             .forEach(i -> i.execute(mask, memory));
         BigInteger sum = BigInteger.ZERO;
@@ -30,12 +30,19 @@ public class DockingData {
         return sum;
     }
 
-    private List<Instruction> processFile() {
+    public int memorySumPartTwo() {
+        instructions = processFile()
+            .stream()
+            .map(this::toInstructionPartTwo)
+            .collect(Collectors.toList());
+        return 0;
+    }
+
+    private List<String> processFile() {
         try {
             Path path = Paths.get(getClass().getClassLoader()
                 .getResource("docking-data-input.txt").toURI());
             return Files.lines(path)
-                .map(this::toInstruction)
                 .collect(Collectors.toList());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
@@ -44,11 +51,27 @@ public class DockingData {
 
     private Instruction toInstruction(String l) {
         String[] tokens = l.split("=");
-        if ("mask".equals(tokens[0].trim())) {
+        if (isFirstTokenMask(tokens[0])) {
             return new MaskInstruction(tokens[1].trim().toCharArray());
         } else {
-            String mem = l.trim().substring(l.indexOf("[") + 1, l.indexOf("]"));
-            return new MemoryInstruction(Integer.parseInt(mem), new BigInteger(tokens[1].trim()));
+            return new MemoryInstruction(Integer.parseInt(getMemoryAddress(l)), new BigInteger(tokens[1].trim()));
         }
+    }
+
+    private Instruction toInstructionPartTwo(String l) {
+        String[] tokens = l.split("=");
+        if (isFirstTokenMask(tokens[0])) {
+            return new MaskInstruction(tokens[1].trim().toCharArray());
+        } else {
+            return new MemoryInstructionPartTwo(Integer.parseInt(getMemoryAddress(l)), new BigInteger(tokens[1].trim()));
+        }
+    }
+
+    private boolean isFirstTokenMask(String token) {
+        return "mask".equals(token.trim());
+    }
+
+    private String getMemoryAddress(String l) {
+        return l.trim().substring(l.indexOf("[") + 1, l.indexOf("]"));
     }
 }
