@@ -11,7 +11,7 @@ public class MaskInstruction implements Instruction {
         this.mask = mask;
     }
 
-    public void execute(Mask mask, Map<Integer, BigInteger> memory) {
+    public void execute(Mask mask, Map<BigInteger, BigInteger> memory) {
         mask.setMask(this.mask);
     }
 

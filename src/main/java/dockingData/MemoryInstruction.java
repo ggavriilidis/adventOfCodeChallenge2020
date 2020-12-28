@@ -9,22 +9,22 @@ import java.util.stream.Collectors;
 
 public class MemoryInstruction implements Instruction {
 
-    private int memoryPosition;
-    private BigInteger memoryValue;
+    protected int memoryAddress;
+    protected BigInteger memoryValue;
 
-    public MemoryInstruction(int memoryPosition, BigInteger memoryValue) {
-        this.memoryPosition = memoryPosition;
+    public MemoryInstruction(int memoryAddress, BigInteger memoryValue) {
+        this.memoryAddress = memoryAddress;
         this.memoryValue = memoryValue;
     }
 
     @Override
-    public void execute(Mask mask, Map<Integer, BigInteger> memory) {
-        int[] binary = convertToBinary();
-        int[] masked = applyMask(mask.getMask(), reverse(binary));
-        memory.put(memoryPosition, convertFromBinary(reverse(masked)));
+    public void execute(Mask mask, Map<BigInteger, BigInteger> memory) {
+        int[] binary = convertToBinary(memoryValue);
+        int[] masked = applyMask(mask.getMask(), binary);
+        memory.put(BigInteger.valueOf(memoryAddress), convertFromBinary(reverse(masked)));
     }
 
-    private BigInteger convertFromBinary(int[] ar) {
+    protected BigInteger convertFromBinary(int[] ar) {
         BigInteger sum = BigInteger.ZERO;
         for (int i = 0; i < ar.length; i ++) {
             if (ar[i] == 1) {
@@ -35,7 +35,7 @@ public class MemoryInstruction implements Instruction {
         return sum;
     }
 
-    private int[] reverse(int[] ar) {
+    protected int[] reverse(int[] ar) {
         List<Integer> list = Arrays.stream(ar).boxed().collect(Collectors.toList());
         Collections.reverse(list);
         for (int i = 0; i < list.size(); i++) {
@@ -53,7 +53,7 @@ public class MemoryInstruction implements Instruction {
         return original;
     }
 
-    private int[] convertToBinary() {
+    protected int[] convertToBinary(BigInteger memoryValue) {
         int[] binaryValue = new int[36];
         while (memoryValue.compareTo(BigInteger.ZERO) > 0) {
             int intLog2 = log2(memoryValue);
@@ -61,10 +61,10 @@ public class MemoryInstruction implements Instruction {
 //            double pow2 = Math.pow(2, intLog2);
             memoryValue = memoryValue.subtract(power(2, intLog2));
         }
-        return binaryValue;
+        return reverse(binaryValue);
     }
 
-    private BigInteger power(int base, int exponent) {
+    protected BigInteger power(int base, int exponent) {
         if (exponent == 0) {
             return BigInteger.ONE;
         }
@@ -74,7 +74,7 @@ public class MemoryInstruction implements Instruction {
         return BigInteger.valueOf(base).multiply(power(base, exponent - 1));
     }
 
-    private static int log2(BigInteger x)
+    protected static int log2(BigInteger x)
     {
         int log2 = 0;
         while (!x.divide(BigInteger.TWO).equals(BigInteger.ZERO)) {

@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface Instruction {
 
-    void execute(Mask mask, Map<Integer, BigInteger> memory);
+    void execute(Mask mask, Map<BigInteger, BigInteger> memory);
 }

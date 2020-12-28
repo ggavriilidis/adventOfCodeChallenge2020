@@ -12,30 +12,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DockingData {
-    List<Instruction> instructions;
-    Mask mask = new Mask();
-    Map<Integer, BigInteger> memory = new HashMap<>();
+    Mask mask;
+    Map<BigInteger, BigInteger> memory;
 
     public BigInteger memorySum() {
-        instructions = processFile()
-                        .stream()
-                        .map(this::toInstruction)
-                        .collect(Collectors.toList());
-        instructions
+        mask = new Mask();
+        memory = new HashMap<>();
+        processFile()
+            .stream()
+            .map(this::toInstruction)
             .forEach(i -> i.execute(mask, memory));
-        BigInteger sum = BigInteger.ZERO;
-        for (BigInteger n : memory.values()) {
-            sum = sum.add(n);
-        }
-        return sum;
+        return memory.values().stream().reduce(BigInteger::add).orElse(BigInteger.ZERO);
     }
 
-    public int memorySumPartTwo() {
-        instructions = processFile()
+    public BigInteger memorySumPartTwo() {
+        mask = new Mask();
+        memory = new HashMap<>();
+        processFile()
             .stream()
             .map(this::toInstructionPartTwo)
-            .collect(Collectors.toList());
-        return 0;
+            .forEach(i -> i.execute(mask, memory));
+        return memory.values().stream().reduce(BigInteger::add).orElse(BigInteger.ZERO);
     }
 
     private List<String> processFile() {
