@@ -15,21 +15,11 @@ public class MemoryInstructionPartTwo extends MemoryInstruction {
     public void execute(Mask mask, Map<BigInteger, BigInteger> memory) {
         int[] binaryMemAddress = convertToBinary(BigInteger.valueOf(memoryAddress));
         String maskedMemoryAddress = applyMask(mask.getMask(), binaryMemAddress);
-        List<String> floatingMemoryAddresses = getFloatingValues(maskedMemoryAddress);
-        for (String floatingMemoryAddress : floatingMemoryAddresses) {
-            List<Integer> ints = floatingMemoryAddress.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
-            memory.put(convertFromBinary(reverse(convertIntegers(ints))), memoryValue);
-        }
-    }
-
-    public static int[] convertIntegers(List<Integer> integers)
-    {
-        int[] ret = new int[integers.size()];
-        for (int i=0; i < ret.length; i++)
-        {
-            ret[i] = integers.get(i);
-        }
-        return ret;
+        List<int[]> floatingMemoryAddresses = getFloatingValues(maskedMemoryAddress)
+            .stream()
+            .map(s -> s.chars().mapToObj(Character::getNumericValue).mapToInt(i -> i).toArray())
+            .collect(Collectors.toList());
+        floatingMemoryAddresses.stream().map(this::convertFromBinary).forEach(fMA -> memory.put(fMA, memoryValue));
     }
 
     private String applyMask(char[] mask, int[] original) {
@@ -47,7 +37,7 @@ public class MemoryInstructionPartTwo extends MemoryInstruction {
         return new String(masked);
     }
 
-    public List<String> getFloatingValues(String mask) {
+    static List<String> getFloatingValues(String mask) {
         if (mask.indexOf('X') == -1) {
             return Arrays.asList(mask);
         }

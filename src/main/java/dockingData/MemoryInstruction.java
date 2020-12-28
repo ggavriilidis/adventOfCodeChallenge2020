@@ -21,13 +21,14 @@ public class MemoryInstruction implements Instruction {
     public void execute(Mask mask, Map<BigInteger, BigInteger> memory) {
         int[] binary = convertToBinary(memoryValue);
         int[] masked = applyMask(mask.getMask(), binary);
-        memory.put(BigInteger.valueOf(memoryAddress), convertFromBinary(reverse(masked)));
+        memory.put(BigInteger.valueOf(memoryAddress), convertFromBinary(masked));
     }
 
     protected BigInteger convertFromBinary(int[] ar) {
         BigInteger sum = BigInteger.ZERO;
+        int[] reverse = reverse(ar);
         for (int i = 0; i < ar.length; i ++) {
-            if (ar[i] == 1) {
+            if (reverse[i] == 1) {
 //                sum += Math.pow(2, i);
                 sum = sum.add(power(2, i));
             }
